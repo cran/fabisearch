@@ -4,17 +4,26 @@
 \alias{est.net}
 \title{Sparse network estimation using non-negative matrix factorization (NMF) for data between change points}
 \usage{
-est.net(Y, nruns = 50, lambda = 7, rank = "optimal", algtype = "brunet")
+est.net(
+  Y,
+  lambda,
+  nruns = 50,
+  rank = "optimal",
+  algtype = "brunet",
+  changepoints = NULL
+)
 }
 \arguments{
-\item{Y}{A numerical matrix representing the multivariate time series, with the columns representing its components.}
-
-\item{nruns}{A positive integer with default value equal to 50. It is used to define the number of runs in the NMF function.}
+\item{Y}{An input multivariate time series in matrix format, with variables organized in columns and time points in rows.}
 
 \item{lambda}{A positive real number, which defines the clustering method and/or the cutoff value when estimating an adjacency matrix from the computed
 consensus matrix. If lambda = a positive integer value, say 6, complete-linkage, hierarchical clustering is applied to the consensus matrix and the cutoff is at
-6 clusters. If lambda = a positive real number, say 0.5, entries in the consensus matrix with a value greater than or equal to 0.5 are labelled 1,
-while entries less than 0.5 are labelled 0.}
+6 clusters. If lambda is a vector of positive integer values, say c(4, 5, 6), the same clustering method is applied for each value sequentially. If lambda
+= a positive real number, say 0.5, entries in the consensus matrix with a value greater than or equal to 0.5 are labeled 1, while entries less than 0.5 are
+labeled 0. Similarly, if lambda is a vector of positive real numbers, say c(0.1, 0.3, 0.8), the same thresholding method is applied for each value
+sequentially.}
+
+\item{nruns}{A positive integer with default value equal to 50. It is used to define the number of runs in the NMF function.}
 
 \item{rank}{A character string or a positive integer, which defines the rank used in the optimization procedure to detect the change points.
 If rank = "optimal", which is also the default value, then the optimal rank is used. If rank = a positive integer value, say 4, then a predetermined
@@ -22,9 +31,15 @@ rank is used.}
 
 \item{algtype}{A character string, which defines the algorithm to be used in the NMF function. By default it is set to "brunet". See the "Algorithms" section of
 \code{\link[NMF]{nmf}} for more information on the available algorithms.}
+
+\item{changepoints}{A vector of positive integers with default value equal to \code{NULL}. It is used to specify whether change points exist in the input \eqn{Y}, and
+thus whether \eqn{Y} should be split into multiple stationary segments and networks estimated separately for each segment. If change points, say c(100, 200) are specified,
+\eqn{Y} is split at the 100th and 200th row to correspond to 3 stationary segments. Each stationary segment is then estimated sequentially, and
+a list is returned where each component corresponds to a stationary segment.}
 }
 \value{
-A matrix (or more specifically, an adjacency matrix) denoting the network (or clustering) structure between components of \eqn{Y}.
+A matrix (or more specifically, an adjacency matrix) denoting the network (or clustering) structure between components of \eqn{Y}. If lambda is a
+vector, a list of adjacency matrices is returned, where each element of the list corresponds to an element in lambda.
 }
 \description{
 This function estimates sparse networks using non-negative matrix factorization (NMF) for data between change points.
@@ -48,10 +63,14 @@ This function estimates sparse networks using non-negative matrix factorization 
 ## algorithm for NMF
 \donttest{est.net(sim2, algtype = "snmf/l")}
 
+## Estimating the network for a multivariate data set, "sim2", with a changepoint
+## at time index 100
+\donttest{est.net(sim2, algtype = "snmf/l", changepoints = 100)}
+
 }
 \references{
 "Factorized Binary Search: a novel technique for change point detection in multivariate high-dimensional time series networks", Ondrus et al.
-(2021), preprint.
+(2021), <arXiv:2103.06347>.
 }
 \author{
 Martin Ondrus, \email{mondrus@ualberta.ca}, Ivor Cribben, \email{cribben@ualberta.ca}

@@ -15,7 +15,7 @@ detect.cps(
 )
 }
 \arguments{
-\item{Y}{A numerical matrix representing the multivariate time series, with the columns representing its components.}
+\item{Y}{An input multivariate time series in matrix format, with variables organized in columns and time points in rows.}
 
 \item{mindist}{A positive integer with default value equal to 35. It is used to define the minimum distance acceptable between detected change points.}
 
@@ -75,7 +75,7 @@ alpha = 0.001, rank = 7, algtype = "snmf/l")}
 }
 \references{
 "Factorized Binary Search: a novel technique for change point detection in multivariate high-dimensional time series networks", Ondrus et al.
-(2021), preprint.
+(2021), <arXiv:2103.06347>.
 }
 \author{
 Martin Ondrus, \email{mondrus@ualberta.ca}, Ivor Cribben, \email{cribben@ualberta.ca}
