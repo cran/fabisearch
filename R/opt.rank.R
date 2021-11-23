@@ -6,7 +6,7 @@
 #'
 #' @importFrom NMF nmf
 #'
-#' @param Y An input multivariate time series in matrix format, with variables organized in columns and time points in rows.
+#' @param Y An input multivariate time series in matrix format, with variables organized in columns and time points in rows. All entries in Y must be positive.
 #' @param nruns A positive integer with default value equal to 50. It is used to define the number of runs in the NMF function.
 #' @param algtype A character string, which defines the algorithm to be used in the NMF function. By default it is set to "brunet". See the "Algorithms" section of
 #' \code{\link[NMF]{nmf}} for more information on the available algorithms.
@@ -15,19 +15,11 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' ## Finding the optimal rank for an input data set "sim2" with the default settings
-#' \donttest{opt.rank(sim2)}
-#' # [1] 3
-#'
-#' ## Finding the optimal rank for an input data set "sim2" with nruns of 100 and the
-#' ## default "brunet" algorithm
-#' \donttest{opt.rank(sim2, nruns = 100)}
-#' # [1] 3
-#'
-#' ## Finding the optimal rank for an input data set "sim2" using the "snmf/l"
-#' ## NMF method and the default nruns
-#' \donttest{opt.rank(sim2, algtype = "snmf/l")}
-#' # [1] 4
+#' opt.rank(sim2, nruns = 4)
+#' # [1] 2
+#' }
 #'
 #' @author Martin Ondrus, \email{mondrus@ualberta.ca}, Ivor Cribben, \email{cribben@ualberta.ca}
 #' @references "Factorized Binary Search: a novel technique for change point detection in multivariate high-dimensional time series networks", Ondrus et al.

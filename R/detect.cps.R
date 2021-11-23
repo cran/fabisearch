@@ -5,21 +5,22 @@
 #' @description This function detects multiple change points in the network (or clustering) structure of multivariate high-dimensional time series using
 #' non-negative matrix factorization and a binary search.
 #'
-#' @importFrom doParallel registerDoParallel
+#' @importFrom doParallel registerDoParallel stopImplicitCluster
 #' @importFrom parallel detectCores
+#' @importFrom pkgmaker isCHECK
 #'
-#' @param Y An input multivariate time series in matrix format, with variables organized in columns and time points in rows.
+#' @param Y An input multivariate time series in matrix format, with variables organized in columns and time points in rows. All entries in Y must be positive.
 #' @param mindist A positive integer with default value equal to 35. It is used to define the minimum distance acceptable between detected change points.
 #' @param nruns A positive integer with default value equal to 50. It is used to define the number of runs in the NMF function.
 #' @param nreps A positive integer with default value equal to 100. It is used to define the number of permutations for the statistical inference procedure.
-#' @param alpha A character string or a positive real number with default value equal to 0.05. If alpha = a positive integer value, say 0.05, then it is
-#' used to define the significance level for inference on the change points. If alpha = "p-value", then the p-value calculated for inference on the change
-#' points is returned.
-#' @param rank A character string or a positive integer, which defines the rank used in the optimization procedure to detect the change points.
-#' If rank = "optimal", which is also the default value, then the optimal rank is used. If rank = a positive integer value, say 4, then a predetermined
-#' rank is used.
+#' @param alpha A positive real number with default value set to NULL. When alpha = NULL, then the p-value calculated for inference on the change
+#' points is returned. If alpha = a positive integer value, say 0.05, then it is used to define the significance level for inference on the change points.
+#' @param rank A positive integer, which defines the rank used in the optimization procedure to detect the change points. If rank = NULL, which is also the
+#' default value, then the optimal rank is computed. If rank = a positive integer value, say 4, then a predetermined rank is used.
 #' @param algtype A character string, which defines the algorithm to be used in the NMF function. By default it is set to "brunet". See the "Algorithms" section of
 #' \code{\link[NMF]{nmf}} for more information on the available algorithms.
+#' @param testtype A character string, which defines the type of statistical test to use during the inference procedure. By default it is set to "t-test". The
+#' other options are "ks" and "wilcox" which correspond to the Kolmogorov-Smirnov and Wilcoxon tests, respectively.
 #'
 #' @return A list with the following components :\cr
 #' \code{rank}: The rank used in the optimization procedure for change point detection.\cr
@@ -28,38 +29,28 @@
 #' @export
 #'
 #' @examples
-#' ## Change point detection for a multivariate data set, sim2, using the default settings
-#' \donttest{detect.cps(sim2)}
-#'
-#' ## Change point detection for a multivariate data set, sim2, with an alpha value of 0.05
-#' \donttest{detect.cps(sim2, alpha = 0.05)}
-#'
-#' ## Change point detection for a multivariate data set, sim2, with a prespecified rank of 6
-#' \donttest{detect.cps(sim2, rank = 6)}
-#'
-#' ## Change point detection for a multivariate data set, sim2, with non-default values
-#' \donttest{detect.cps(sim2, mindist = 50, nruns = 100, nreps = 1000,
-#' alpha = 0.001, rank = 7, algtype = "snmf/l")}
-#'
-#' ## Example output from the detect.cps() function
-#' \donttest{detect.cps(sim2, mindist = 50, nruns = 20)}
+#' \donttest{
+#' ## Change point detection for a multivariate data set, sim2, using settings:
+#' ## rank = 3, mindist = 99, nruns = 2, and nreps = 2
+#' set.seed(123)
+#' detect.cps(sim2, rank = 3, mindist = 99, nruns = 2, nreps = 2)
+#' }
 #'
 #' # $rank
-#' # [1] 5
+#' # [1] 3
 #' #
 #' # $change_points
-#' #    T stat_test
-#' # 1  99      TRUE
-#' # 2 148     FALSE
+#' #     T stat_test
+#' # 1 101 0.3867274
 #' #
 #' # $compute_time
-#' # Time difference of 15.8113 mins
+#' # Time difference of 0.741534 mins
 #'
 #' @author Martin Ondrus, \email{mondrus@ualberta.ca}, Ivor Cribben, \email{cribben@ualberta.ca}
 #' @references "Factorized Binary Search: a novel technique for change point detection in multivariate high-dimensional time series networks", Ondrus et al.
 #' (2021), <arXiv:2103.06347>.
 
-detect.cps = function(Y, mindist = 35, nruns = 50, nreps = 100, alpha = 0.05, rank = "optimal", algtype = "brunet"){
+detect.cps = function(Y, mindist = 35, nruns = 50, nreps = 100, alpha = NULL, rank = NULL, algtype = "brunet", testtype = "t-test"){
 
   # Find T as the number of rows in the input matrix
   T = nrow(Y)
@@ -77,7 +68,7 @@ detect.cps = function(Y, mindist = 35, nruns = 50, nreps = 100, alpha = 0.05, ra
   rownames(Y) = x
 
   # If rank has not been specified, then it must be found
-  if (rank == "optimal"){
+  if (is.null(rank)){
     n.rank = opt.rank(Y, nruns, algtype)
   } else {
     n.rank = rank
@@ -91,8 +82,12 @@ detect.cps = function(Y, mindist = 35, nruns = 50, nreps = 100, alpha = 0.05, ra
 
   # Check whether any of the change points found have a negative change in loss, otherwise do not run rest of procedures
   if(any(orig.splits$chg.loss < 0)){
-    # Register parallel backend
-    registerDoParallel(detectCores())
+    # Register parallel backend, use maximum number of cores unless running a CRAN check
+    if(isCHECK()){
+      registerDoParallel(min(detectCores(), 2))
+    } else if (!isCHECK()){
+      registerDoParallel(detectCores())
+    }
 
     # Define the refitted splits
     refit.splits = refit_splits(orig.splits, Y, T, x, nreps, n.rank, algtype)
@@ -101,7 +96,7 @@ detect.cps = function(Y, mindist = 35, nruns = 50, nreps = 100, alpha = 0.05, ra
     perm.distr = perm_distr(orig.splits, Y, T, x, nreps, n.rank, algtype)
 
     # Determine which splits are significant
-    sign.splits = sign_splits(orig.splits, refit.splits, perm.distr, alpha)
+    sign.splits = sign_splits(orig.splits, refit.splits, perm.distr, alpha, testtype)
   } else {
     # Initialize an empty dataframe
     sign.splits = data.frame(T = double(), stat_test = logical())
@@ -112,6 +107,9 @@ detect.cps = function(Y, mindist = 35, nruns = 50, nreps = 100, alpha = 0.05, ra
 
   # Define the variables for the final output
   cpt.time = difftime(compute.T.end, compute.T.start, units="mins")
+
+  # Close the parallel backend
+  stopImplicitCluster()
 
   # Save the final output as a list and return from the function
   final.output = list(rank = n.rank, change_points = sign.splits, compute_time = cpt.time)

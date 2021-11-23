@@ -7,7 +7,7 @@
 opt.rank(Y, nruns = 50, algtype = "brunet")
 }
 \arguments{
-\item{Y}{An input multivariate time series in matrix format, with variables organized in columns and time points in rows.}
+\item{Y}{An input multivariate time series in matrix format, with variables organized in columns and time points in rows. All entries in Y must be positive.}
 
 \item{nruns}{A positive integer with default value equal to 50. It is used to define the number of runs in the NMF function.}
 
@@ -21,19 +21,11 @@ A positive integer representing the optimal rank.
 This function finds the optimal rank for non-negative matrix factorization (NMF).
 }
 \examples{
+\donttest{
 ## Finding the optimal rank for an input data set "sim2" with the default settings
-\donttest{opt.rank(sim2)}
-# [1] 3
-
-## Finding the optimal rank for an input data set "sim2" with nruns of 100 and the
-## default "brunet" algorithm
-\donttest{opt.rank(sim2, nruns = 100)}
-# [1] 3
-
-## Finding the optimal rank for an input data set "sim2" using the "snmf/l"
-## NMF method and the default nruns
-\donttest{opt.rank(sim2, algtype = "snmf/l")}
-# [1] 4
+opt.rank(sim2, nruns = 4)
+# [1] 2
+}
 
 }
 \references{

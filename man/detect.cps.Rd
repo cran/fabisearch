@@ -9,13 +9,14 @@ detect.cps(
   mindist = 35,
   nruns = 50,
   nreps = 100,
-  alpha = 0.05,
-  rank = "optimal",
-  algtype = "brunet"
+  alpha = NULL,
+  rank = NULL,
+  algtype = "brunet",
+  testtype = "t-test"
 )
 }
 \arguments{
-\item{Y}{An input multivariate time series in matrix format, with variables organized in columns and time points in rows.}
+\item{Y}{An input multivariate time series in matrix format, with variables organized in columns and time points in rows. All entries in Y must be positive.}
 
 \item{mindist}{A positive integer with default value equal to 35. It is used to define the minimum distance acceptable between detected change points.}
 
@@ -23,16 +24,17 @@ detect.cps(
 
 \item{nreps}{A positive integer with default value equal to 100. It is used to define the number of permutations for the statistical inference procedure.}
 
-\item{alpha}{A character string or a positive real number with default value equal to 0.05. If alpha = a positive integer value, say 0.05, then it is
-used to define the significance level for inference on the change points. If alpha = "p-value", then the p-value calculated for inference on the change
-points is returned.}
+\item{alpha}{A positive real number with default value set to NULL. When alpha = NULL, then the p-value calculated for inference on the change
+points is returned. If alpha = a positive integer value, say 0.05, then it is used to define the significance level for inference on the change points.}
 
-\item{rank}{A character string or a positive integer, which defines the rank used in the optimization procedure to detect the change points.
-If rank = "optimal", which is also the default value, then the optimal rank is used. If rank = a positive integer value, say 4, then a predetermined
-rank is used.}
+\item{rank}{A positive integer, which defines the rank used in the optimization procedure to detect the change points. If rank = NULL, which is also the
+default value, then the optimal rank is computed. If rank = a positive integer value, say 4, then a predetermined rank is used.}
 
 \item{algtype}{A character string, which defines the algorithm to be used in the NMF function. By default it is set to "brunet". See the "Algorithms" section of
 \code{\link[NMF]{nmf}} for more information on the available algorithms.}
+
+\item{testtype}{A character string, which defines the type of statistical test to use during the inference procedure. By default it is set to "t-test". The
+other options are "ks" and "wilcox" which correspond to the Kolmogorov-Smirnov and Wilcoxon tests, respectively.}
 }
 \value{
 A list with the following components :\cr
@@ -45,32 +47,22 @@ This function detects multiple change points in the network (or clustering) stru
 non-negative matrix factorization and a binary search.
 }
 \examples{
-## Change point detection for a multivariate data set, sim2, using the default settings
-\donttest{detect.cps(sim2)}
-
-## Change point detection for a multivariate data set, sim2, with an alpha value of 0.05
-\donttest{detect.cps(sim2, alpha = 0.05)}
-
-## Change point detection for a multivariate data set, sim2, with a prespecified rank of 6
-\donttest{detect.cps(sim2, rank = 6)}
-
-## Change point detection for a multivariate data set, sim2, with non-default values
-\donttest{detect.cps(sim2, mindist = 50, nruns = 100, nreps = 1000,
-alpha = 0.001, rank = 7, algtype = "snmf/l")}
-
-## Example output from the detect.cps() function
-\donttest{detect.cps(sim2, mindist = 50, nruns = 20)}
+\donttest{
+## Change point detection for a multivariate data set, sim2, using settings:
+## rank = 3, mindist = 99, nruns = 2, and nreps = 2
+set.seed(123)
+detect.cps(sim2, rank = 3, mindist = 99, nruns = 2, nreps = 2)
+}
 
 # $rank
-# [1] 5
+# [1] 3
 #
 # $change_points
-#    T stat_test
-# 1  99      TRUE
-# 2 148     FALSE
+#     T stat_test
+# 1 101 0.3867274
 #
 # $compute_time
-# Time difference of 15.8113 mins
+# Time difference of 0.741534 mins
 
 }
 \references{
