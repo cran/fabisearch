@@ -75,7 +75,7 @@ net.3dplot = function(A, ROIs = NULL, colors = NULL, coordROIs = NULL){
   # If ROIs is null, plot all ROIs
   if(is.null(ROIs)){
     ROIs = coordROIs
-  } else if (class(ROIs) == "character"){
+  } else if (is.character(ROIs)){
     ROIs = coordROIs[coordROIs[,1] %in% ROIs, ]
   } else if (is.numeric(ROIs)){
     ROIs = coordROIs[1:nrow(coordROIs) %in% ROIs, ]
@@ -103,7 +103,7 @@ net.3dplot = function(A, ROIs = NULL, colors = NULL, coordROIs = NULL){
     }
 
     # Plot these coordinates as nodes
-    plot3d(coord.comm, col = colors[i], size=12, add=T)
+    plot3d(coord.comm, col = colors[i], radius = 2, add = T, type = "s")
   }
 
   # Narrow down ma3d to only include the edges for nodes that were specified
