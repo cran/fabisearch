@@ -1,9 +1,9 @@
-24290fc3db4a4a1b65abacecf9e3c848 *DESCRIPTION
+b7ec82f46730fd7724e36ca182207f4c *DESCRIPTION
 534f9c566536e4d55d392fb44801f124 *LICENSE
-16c7f2e07869e581c0832196b92cd490 *NAMESPACE
-c9d4e6e4efe43836e85cf72abb0c4a3b *NEWS.md
+9955bff6936052d349d1b8899120a988 *NAMESPACE
+51aeade94c812b0e68fd3e038c10970a *NEWS.md
 2d42b4ebc068d22bf5352ac066f93559 *R/data.R
-11b1fda7be85ed10be6dc49deee25921 *R/detect.cps.R
+033fbef1ece63e017ad1e8af03229969 *R/detect.cps.R
 48eba75dae3080587eeea4f96a37d672 *R/est.net.R
 7c806ffb8f3cbc8fa7247eb848c3851e *R/net.3dplot.R
 1f194de237659fe8081df441117c4ac5 *R/opt.rank.R
@@ -13,7 +13,7 @@ ae3a9a8c9bdb5f33af79617ea929f8ca *R/permute_split.R
 b9fd78b047eb3d07f3041c15ae28efd4 *R/sign_splits.R
 af3f95346133b87826e68a65dc12b512 *R/split_all.R
 dea2158c5f692b14a29db123b2bd83d1 *R/sysdata.rda
-be8a29918a5402f936d344982cfc1f15 *build/partial.rdb
+109eb4529b76825d74f490c865cf9985 *build/partial.rdb
 5cffe67b7039e03a868e794df098cb97 *data/AALatlas.rda
 ee85abb037a2a034f7ebf938a6e64f0a *data/AALfmri.rda
 da8498218f4124dd1151901af0d388bf *data/adjmatrix.rda
@@ -24,7 +24,7 @@ b092fc99e1f8b1905867c4aecd98b54a *data/sim2.rda
 805e93e8f593e75f5f66cf2ba1ae0880 *man/AALatlas.Rd
 1bf447b94cec1c9680474d48f2da6a82 *man/AALfmri.Rd
 2f8127ded70622de832ff3e9cf394aed *man/adjmatrix.Rd
-497629678d9e80943de081452f0b794e *man/detect.cps.Rd
+dd1a9100c6b0d05c5740b5bec8de8a41 *man/detect.cps.Rd
 496255637877ffbd24e7d2078e03cf0e *man/est.net.Rd
 0cce28c0baa048099a9dfe73ced70fcc *man/fabisearch.Rd
 e028de8b7951e69f2d4a1c973fbe051a *man/gordatlas.Rd
